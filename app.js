@@ -6,12 +6,13 @@ const users = [
 
 // Modifies data
 const storeUser = (users, user) => {
-  for (let i = 0; i < users.length; i++) {
-    if (users[i].name.toLowerCase() === user.name.toLowerCase()) {
-      users[i] = user
-      break
+  return users.map((currentUser) => {
+    if (currentUser.name.toLowerCase() === user.name.toLowerCase()) {
+      return user
+    } else {
+      return currentUser
     }
-  }
+  })
 }
 
 // Pure functions
@@ -20,12 +21,13 @@ const cloneObject = (obj) => {
 }
 
 const getUser = (users, name) => {
-  for (let i = 0; i < users.length; i++) {
-    if (users[i].name.toLowerCase() === name.toLowerCase()) {
-      return users[i]
+  return users.reduce((obj, user) => {
+    if (user.name.toLowerCase() === name.toLowerCase()) {
+      return user
+    } else {
+      return obj
     }
-  }
-  return null
+  }, null)
 }
 
 const updateScore = (user, newAmmount) => {
@@ -46,9 +48,11 @@ const updateTries = (user) => {
 const user = getUser(users, 'Henry')
 const user1 = updateScore(cloneObject(user), 30)
 const user2 = updateTries(cloneObject(user1))
-storeUser(users, user2)
+const newArray = storeUser(users, user2) // now returns a new array
 
 console.log(users)
+console.log(newArray)
+
 console.log(user) // This will have the user updated even if we used the pure functions because data is passed by reference
 
 console.log(user1) // this will keep the new cloned object from user
