@@ -15,6 +15,10 @@ const storeUser = (users, user) => {
 }
 
 // Pure functions
+const cloneObject = (obj) => {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 const getUser = (users, name) => {
   for (let i = 0; i < users.length; i++) {
     if (users[i].name.toLowerCase() === name.toLowerCase()) {
@@ -40,9 +44,12 @@ const updateTries = (user) => {
 
 // Checking functions
 const user = getUser(users, 'Henry')
-const user1 = updateScore(user, 30)
-const user2 = updateTries(user1)
+const user1 = updateScore(cloneObject(user), 30)
+const user2 = updateTries(cloneObject(user1))
 storeUser(users, user2)
 
 console.log(users)
 console.log(user) // This will have the user updated even if we used the pure functions because data is passed by reference
+
+console.log(user1) // this will keep the new cloned object from user
+console.log(user2) // this will keep the new cloned object from user1
