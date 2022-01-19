@@ -1,3 +1,5 @@
+const { pipe, compose } = require('./utils')
+
 console.log('Function composition with pipe and compose')
 
 const myString = 'Innovation distinguishes between a leader and a follower.'
@@ -23,14 +25,6 @@ const uglyArray = filterArticles(
 console.log(uglyArray)
 
 // Using Compose - right to left with reduceRight
-const compose = (...fns) => {
-  return (x) => {
-    return fns.reduceRight((value, f) => {
-      return f(value)
-    }, x)
-  }
-}
-
 const prepareStringWithCompose = compose(
   filterArticles,
   breakout,
@@ -43,14 +37,6 @@ const composeArray = prepareStringWithCompose(myString)
 console.log(composeArray)
 
 // Using Pipe - left to right with reduce
-const pipe = (...fns) => {
-  return (x) => {
-    return fns.reduce((value, f) => {
-      return f(value)
-    }, x)
-  }
-}
-
 const prepareStringWithPipe = pipe(
   trim,
   noPunctuation,
