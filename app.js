@@ -1,3 +1,5 @@
+const { pipe } = require('./exercises/utils')
+
 const users = [
   { name: 'James', score: 30, tries: 1 },
   { name: 'Mary', score: 110, tries: 4 },
@@ -30,7 +32,7 @@ const getUser = (users, name) => {
   }, null)
 }
 
-const updateScore = (user, newAmmount) => {
+const updateScore = (newAmmount, user) => {
   if (user) {
     user.score += newAmmount
     return user
@@ -45,15 +47,22 @@ const updateTries = (user) => {
 }
 
 // Checking functions
-const user = getUser(users, 'Henry')
-const user1 = updateScore(cloneObject(user), 30)
-const user2 = updateTries(cloneObject(user1))
-const newArray = storeUser(users, user2) // now returns a new array
+// const user = getUser(users, 'Henry')
+// const user1 = updateScore(30, cloneObject(user))
+// const user2 = updateTries(cloneObject(user1))
+// const newArray = storeUser(users, user2) // now returns a new array
 
-console.log(users)
-console.log(newArray)
+// Using partial functions with bind to refactor the previous lines
+const partialGetUser = getUser.bind(null, users)
+const partialUpdateScore30 = updateScore.bind(null, 30)
 
-console.log(user) // This will have the user updated even if we used the pure functions because data is passed by reference
+// Composition with pipe from previous functions
+const updateUser = pipe(
+  partialGetUser,
+  cloneObject,
+  partialUpdateScore30,
+  updateTries
+)
 
-console.log(user1) // this will keep the new cloned object from user
-console.log(user2) // this will keep the new cloned object from user1
+const newestUser = updateUser('Henry')
+console.log(newestUser)
