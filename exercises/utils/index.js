@@ -16,4 +16,18 @@ const compose = (...fns) => {
   }
 }
 
-module.exports = { pipe, compose }
+// Using currying
+const curry = (fn, arity = fn.length) => {
+  return (function nextCurried(prevArgs) {
+    return function curried(nextArg) {
+      var args = [...prevArgs, nextArg]
+      if (args.length >= arity) {
+        return fn(...args)
+      } else {
+        return nextCurried(args)
+      }
+    }
+  })([])
+}
+
+module.exports = { pipe, compose, curry }
