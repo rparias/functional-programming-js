@@ -1,4 +1,4 @@
-const { pipe } = require('./exercises/utils')
+const { pipe, curry } = require('./exercises/utils')
 
 const users = [
   { name: 'James', score: 30, tries: 1 },
@@ -66,3 +66,31 @@ const updateUser = pipe(
 
 const newestUser = updateUser('Henry')
 console.log(newestUser)
+
+// Using currying and composition create a specialized function
+// that always acts on the users array but allows you to enter a
+// user name. Have it return a clone of that user.
+const curriedGetUserCloned = pipe(curry(getUser)(users), cloneObject)
+console.log(curriedGetUserCloned('Mary'))
+
+// Using your curried function, compose a new specialized function
+// that will be used to update Henry. (Only invoked if you want to
+// update Henry). It should accepts a new score and then return the
+// users that contains the updated score and tries for Herny. To
+// compose this function you may need to create oher functions.
+const updateScore2 = (user, newAmmount) => {
+  if (user) {
+    user.score += newAmmount
+    return user
+  }
+}
+
+const getHenry = () => curriedGetUserCloned('Henry')
+
+const updateHenryScore = pipe(
+  curry(updateScore2)(getHenry()),
+  updateTries,
+  curry(storeUser)(users)
+)
+
+console.log('UpdateHenryScore', updateHenryScore(100))
