@@ -1,4 +1,4 @@
-const { pipe, curry } = require('./exercises/utils')
+const R = require('ramda')
 
 const users = [
   { name: 'James', score: 30, tries: 1 },
@@ -6,44 +6,25 @@ const users = [
   { name: 'Henry', score: 80, tries: 3 },
 ]
 
-// Modifies data
-const storeUser = (users, user) => {
-  return users.map((currentUser) => {
-    if (currentUser.name.toLowerCase() === user.name.toLowerCase()) {
-      return user
-    } else {
-      return currentUser
-    }
-  })
-}
-
-// Pure functions
-const cloneObject = (obj) => {
-  return JSON.parse(JSON.stringify(obj))
-}
+const storeUser = (users, user) =>
+  R.map((currentUser) =>
+    // return currentUser.name.toLowerCase() === user.name.toLowerCase() ? user : currentUser
+    R.eqBy(R.toLower, currentUser.name, user.name) ? user : currentUser
+  )(users)
 
 const getUser = (users, name) => {
-  return users.reduce((obj, user) => {
-    if (user.name.toLowerCase() === name.toLowerCase()) {
-      return user
-    } else {
-      return obj
-    }
-  }, null)
+  return R.reduce((obj, user) =>
+    // return user.name.toLowerCase() === name.toLowerCase() ? user : obj
+    R.eqBy(R.toLower, user.name, name) ? R.clone(user) : obj
+  )(null)(users)
 }
 
 const updateScore = (newAmmount, user) => {
-  if (user) {
-    user.score += newAmmount
-    return user
-  }
+  return R.assoc('score', user.score + newAmmount, user)
 }
 
 const updateTries = (user) => {
-  if (user) {
-    user.tries++
-    return user
-  }
+  return R.assoc('tries', user.tries + 1, user)
 }
 
 // Checking functions
@@ -57,12 +38,7 @@ const partialGetUser = getUser.bind(null, users)
 const partialUpdateScore30 = updateScore.bind(null, 30)
 
 // Composition with pipe from previous functions
-const updateUser = pipe(
-  partialGetUser,
-  cloneObject,
-  partialUpdateScore30,
-  updateTries
-)
+const updateUser = R.pipe(partialGetUser, partialUpdateScore30, updateTries)
 
 const newestUser = updateUser('Henry')
 console.log(newestUser)
@@ -70,7 +46,7 @@ console.log(newestUser)
 // Using currying and composition create a specialized function
 // that always acts on the users array but allows you to enter a
 // user name. Have it return a clone of that user.
-const curriedGetUserCloned = pipe(curry(getUser)(users), cloneObject)
+const curriedGetUserCloned = R.curry(getUser)(users)
 console.log(curriedGetUserCloned('Mary'))
 
 // Using your curried function, compose a new specialized function
@@ -79,18 +55,21 @@ console.log(curriedGetUserCloned('Mary'))
 // users that contains the updated score and tries for Herny. To
 // compose this function you may need to create oher functions.
 const updateScore2 = (user, newAmmount) => {
-  if (user) {
-    user.score += newAmmount
-    return user
+  const clonedUser = R.clone(user)
+
+  if (clonedUser) {
+    clonedUser.score += newAmmount
+    return clonedUser
   }
 }
 
 const getHenry = () => curriedGetUserCloned('Henry')
 
-const updateHenryScore = pipe(
-  curry(updateScore2)(getHenry()),
+const updateHenryScore = R.pipe(
+  R.curry(updateScore2)(getHenry()),
   updateTries,
-  curry(storeUser)(users)
+  R.curry(storeUser)(users)
 )
 
+console.log('Original scores array', users)
 console.log('UpdateHenryScore', updateHenryScore(100))
