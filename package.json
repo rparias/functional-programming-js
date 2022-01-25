@@ -13,6 +13,7 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ramda": "^0.28.0"
   }
 }
